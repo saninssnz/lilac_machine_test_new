@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   GetController layoutController = Get.find();
 
 
+
   @override
   void initState() {
     // playVideo(layoutController.selectedFile.webViewLink.
@@ -85,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossPlatform: InAppWebViewOptions(),
                           ),
                           onWebViewCreated: (InAppWebViewController controller) {
-                            // webView = controller;
+                            layoutController.controllerRef.value = controller;
                           },
                           onLoadStart:
                               (InAppWebViewController controller, Uri? url) {},
@@ -156,28 +157,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Utils.backButton(onTap: () {
-                          // if (layoutController.index > 0) {
-                          //   layoutController.index--;
-                          //   layoutController.selectedFile =
-                          //   layoutController.mp4Files[layoutController.index];
-                          //   final previousVideoUrl =
-                          //       layoutController.mp4Files[layoutController.index].path;
-                          //   setState(() {
-                          //     _videoUrl = previousVideoUrl;
-                          //   });
-                          // }
-                          // if (layoutController.index == 0) {
-                          //   layoutController.index = 3;
-                          // } else {
-                          //   layoutController.index = layoutController.index - 1;
-                          //   layoutController.selectedFile =
-                          //       layoutController.videoFiles[layoutController.index];
-                          // }
-                          // Navigator.pushAndRemoveUntil(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => HomeScreen()),
-                          //   (Route<dynamic> route) => false,
-                          // );
+                          if(layoutController.index==0){
+                            layoutController.index=layoutController.videoFiles.length-1;
+                          }
+                          else {
+                            layoutController.index--;
+                          }
+                            layoutController.selectedFile =
+                            layoutController.videoFiles[layoutController.index];
+                            String selectedVideoUrl = layoutController
+                                .selectedFile.webViewLink
+                                .replaceAll('view?usp=drivesdk', 'preview')
+                                .toString();
+                            final webViewController = layoutController
+                                .controllerRef.value;
+                            webViewController?.loadUrl(urlRequest: URLRequest(
+                                url: Uri.parse(selectedVideoUrl)));
                         }),
                         InkWell(
                           onTap: () async {
@@ -191,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   layoutController.selectedFile.webContentLink
                                       .toString(),
                                   savePath);
+                              layoutController.fetchMp4Files();
                             } else {
                               // Permission denied, handle accordingly
                               print('Permission denied');
@@ -210,11 +206,30 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        Utils.forwardButton(onTap: () {})
+                        Utils.forwardButton(onTap: () {
+                          if(layoutController.index==layoutController.videoFiles.length-1){
+                            layoutController.index=0;
+                          }
+                          else {
+                            layoutController.index++;
+                          }
+                            layoutController.selectedFile =
+                            layoutController.videoFiles[layoutController.index];
+                            String selectedVideoUrl = layoutController
+                                .selectedFile.webViewLink
+                                .replaceAll('view?usp=drivesdk', 'preview')
+                                .toString();
+                            final webViewController = layoutController
+                                .controllerRef.value;
+                            webViewController?.loadUrl(urlRequest: URLRequest(
+                                url: Uri.parse(selectedVideoUrl)));
+                        })
                       ],
                     ),
                   ),
-                  Text("Downloads"),
+                  Text("Downloads",style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  ),),
                   Container(
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width,
@@ -225,7 +240,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             final file = layoutController.mp4Files[index];
                             final fileName = file.path.split('/').last; // Extract file name
                             return ListTile(
-                              title: Text(fileName), // Display file name
+                              title: Text(fileName),
+                              leading: Icon(Icons.video_file_rounded),// Display file name
                               onTap: () {
                                 layoutController.selectVideo(file);
                                 final selectedVideoPath = file.path;// Select the tapped file

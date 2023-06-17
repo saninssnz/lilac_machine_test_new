@@ -6,6 +6,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:lilac_machine_test/service/getx.dart';
 import 'package:lilac_machine_test/ui/home_screen/components/drawer_screen.dart';
 import 'package:lilac_machine_test/ui/home_screen/home_screen.dart';
+import 'package:lilac_machine_test/utils/constants.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoListScreen extends StatefulWidget {
@@ -38,6 +39,13 @@ class _VideoListScreenState extends State<VideoListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        automaticallyImplyLeading: false,
+        title: Text('Videos in Drive',style: TextStyle(
+          color: Colors.white
+        ),),
+      ),
       drawer: DrawerScreen(),
       body: SafeArea(
         child: _buildBody(),
@@ -71,6 +79,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(layoutController.videoFiles[index].name!),
+                  leading: Icon(Icons.video_file_rounded),
                 onTap: () {
                   layoutController.selectedFile = layoutController.videoFiles[index];
                   layoutController.index = index;

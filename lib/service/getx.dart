@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:lilac_machine_test/model/user_model.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -34,6 +35,8 @@ class GetController extends GetxController {
   late Directory directory;
   RxList<File> mp4Files = <File>[].obs;
   final Rx<File?> selectedVideo = Rx<File?>(null);
+  final controllerRef = Rx<InAppWebViewController?>(null);
+
 
 
   getUserDetails(UserModel userModel) {

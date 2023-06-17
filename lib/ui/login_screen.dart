@@ -8,6 +8,7 @@ import 'package:lilac_machine_test/model/user_model.dart';
 import 'package:lilac_machine_test/service/getx.dart';
 import 'package:lilac_machine_test/ui/home_screen/home_screen.dart';
 import 'package:lilac_machine_test/ui/register_screen.dart';
+import 'package:lilac_machine_test/ui/video_List_Screen.dart';
 import 'package:lilac_machine_test/utils/Toast.dart';
 import 'package:lilac_machine_test/utils/constants.dart';
 import 'package:lilac_machine_test/utils/data_repo.dart';
@@ -63,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 cursorColor: Colors.black,
                 controller: mobileController,
                 keyboardType: TextInputType.phone,
-                decoration: buildInputDecoration(hintText: "Enter mobile no. with country code"),
+                decoration: buildInputDecoration(hintText: "Enter mobile no. with country code eg: +919856458755"),
               ),
             ),
             Visibility(
@@ -85,7 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 50,),
             isLoading?
-            CircularProgressIndicator():Padding(
+            CircularProgressIndicator(
+              color: primaryColor,
+            ):Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: InkWell(
                 onTap: () {
@@ -149,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       .width,
                   child: Center(
                     child: Text(
-                      otpCodeVisible?"Verify":"Log in",
+                      otpCodeVisible?"Verify":"Send OTP",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -227,7 +230,7 @@ void verifyCode() async{
     await  auth.signInWithCredential(credential).then((value){
       print("logged in successfully");
 
-      Get.to(()=>HomeScreen());
+      Get.to(()=>VideoListScreen());
     });
 }
 
