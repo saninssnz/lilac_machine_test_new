@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:lilac_machine_test/service/getx.dart';
 import 'package:lilac_machine_test/utils/constants.dart';
 import 'package:video_player/video_player.dart';
 
@@ -14,22 +18,25 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> {
-  late VideoPlayerController _videoController;
-  late Future<void> _initializeVideoPlayerFuture;
+  GetController layoutController = Get.find();
+
 
   @override
   void initState() {
     super.initState();
-    _videoController = VideoPlayerController.file(
+
+    FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    
+    layoutController.fileVideoController = VideoPlayerController.file(
       File(widget.videoPath),
     );
-    _initializeVideoPlayerFuture = _videoController.initialize();
-    _videoController.play();
+    layoutController.initializeVideoPlayerFuture = layoutController.fileVideoController.initialize();
+    layoutController.fileVideoController.play();
   }
 
   @override
   void dispose() {
-    _videoController.dispose();
+    layoutController.fileVideoController.dispose();
     super.dispose();
   }
 
@@ -41,12 +48,12 @@ class _VideoPageState extends State<VideoPage> {
         title: Text('Video Player'),
       ),
       body: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
+        future: layoutController.initializeVideoPlayerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return AspectRatio(
-              aspectRatio: _videoController.value.aspectRatio,
-              child: VideoPlayer(_videoController),
+              aspectRatio: layoutController.fileVideoController.value.aspectRatio,
+              child: VideoPlayer(layoutController.fileVideoController),
             );
           } else {
             return Center(child: CircularProgressIndicator());

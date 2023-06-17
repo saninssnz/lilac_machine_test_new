@@ -245,13 +245,6 @@ void verifyCode() async{
           autofocus: true,
           obscureText: true,
           onSubmitted: (value) {
-            // if(enteredPin.length==6){
-            //   if(enteredPin.isNotEmpty && enteredPin==widget.doctorModel.pin){
-            //     Navigator.of(context).pop(true);
-            //   }else{
-            //     Toast.show("Wrong pin", context);
-            //   }
-            // }
           },
           onChanged: (value) {
             if (enteredPin.length < 6 || value.length == 0) {

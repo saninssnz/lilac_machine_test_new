@@ -27,20 +27,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  VideoPlayerController? _videoPlayerController;
-  // late ChewieController? chewieController;
   GetController layoutController = Get.find();
-
-
 
   @override
   void initState() {
-    // playVideo(layoutController.selectedFile.webViewLink.
-    // replaceAll('view?usp=drivesdk', 'preview').toString());
 
      FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
 
-    _videoPlayerController = VideoPlayerController.network(layoutController
+    layoutController.videoPlayerController = VideoPlayerController.network(layoutController
         .selectedFile.webViewLink
         .replaceAll('view?usp=drivesdk', 'preview')
         .toString())
@@ -53,8 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _videoPlayerController!.dispose();
-    // chewieController!.dispose();
+    layoutController.videoPlayerController!.dispose();
     super.dispose();
   }
 
@@ -75,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Stack(
                     children: [
                       AspectRatio(
-                        aspectRatio: _videoPlayerController!.value.aspectRatio,
+                        aspectRatio: layoutController.videoPlayerController!.value.aspectRatio,
                         child: InAppWebView(
                           initialUrlRequest: URLRequest(
                             url: Uri.parse(layoutController.selectedFile.webViewLink
@@ -94,38 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               (InAppWebViewController controller, Uri? url) {},
                         ),
                       ),
-                      // FlickVideoPlayer(
-                      //     flickManager: FlickManager(
-                      //       onVideoEnd: () {
-                      //         // fileModel.controller!.pause();
-                      //         // setState(() { });
-                      //       },
-                      //       autoPlay: true,
-                      //       videoPlayerController: _videoPlayerController!,
-                      //
-                      //     ),
-                      //     flickVideoWithControlsFullscreen: FlickVideoWithControls(
-                      //       controls: FlickLandscapeControls(),
-                      //     ),
-                      //     // flickVideoWithControls: FlickVideoWithControls(
-                      //     //   closedCaptionTextStyle: TextStyle(fontSize: 8),
-                      //     //   controls: FlickPortraitControls(),
-                      //     // ),
-                      //     ),
-                      // chewieController != null?
-                      //   Container(
-                      //     alignment: Alignment.topCenter,
-                      //     child: AspectRatio(
-                      //       aspectRatio: _videoPlayerController!.value.aspectRatio,
-                      //         child: Chewie(controller: chewieController!,))
-                      //   ),
-                      //   :
-                      // Container(
-                      //   height: 200,
-                      //   child: Center(
-                      //     child: CircularProgressIndicator(),
-                      //   ),
-                      // ),
                       Padding(
                         padding:
                             const EdgeInsets.only(left: 15.0, top: 15, bottom: 15),
@@ -258,26 +219,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> playVideo(String videoUrl) async {
-    _videoPlayerController = VideoPlayerController.network(videoUrl);
-    // _videoPlayerController!.initialize();
-    // ..addListener(() => setState(() {}))
-    // ..setLooping(true)
-    // ..initialize().then((value) => _videoPlayerController!.play());
-
-    // chewieController = ChewieController(
-    //   videoPlayerController: _videoPlayerController!,
-    //   autoPlay: true,
-    //   looping: false,
-    //   allowFullScreen: true,
-    //   materialProgressColors: ChewieProgressColors(
-    //       backgroundColor: Colors.black,
-    //       playedColor: Colors.green.shade300),
-    //   allowPlaybackSpeedChanging: true,
-    //   showControls: true,
-    //   showOptions: false,
-    // );
   }
 }

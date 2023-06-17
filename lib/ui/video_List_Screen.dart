@@ -19,8 +19,6 @@ class VideoListScreen extends StatefulWidget {
 class _VideoListScreenState extends State<VideoListScreen> {
 
   GetController layoutController=Get.find();
-  late VideoPlayerController? _videoPlayerController;
-  late ChewieController? chewieController;
 
 
   @override
@@ -32,13 +30,13 @@ class _VideoListScreenState extends State<VideoListScreen> {
   }
   @override
   void dispose() {
-    _videoPlayerController!.dispose();
-    chewieController!.dispose();
+    layoutController.videoListPlayerController!.dispose();
+    layoutController.chewieController!.dispose();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Obx(() =>Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
         automaticallyImplyLeading: false,
@@ -48,31 +46,16 @@ class _VideoListScreenState extends State<VideoListScreen> {
       ),
       drawer: DrawerScreen(),
       body: SafeArea(
-        child: _buildBody(),
+        child: layoutController.videoFiles.isEmpty?
+        Center(
+            child: CircularProgressIndicator(
+              color: primaryColor,)):
+        _buildBody(),
       ),
-    );
+    ));
   }
 
   Widget _buildBody() {
-    // if (layoutController.driveApi == null) {
-    //   return Center(
-    //     child: ElevatedButton(
-    //       child: const Text('Sign In with Google'),
-    //       onPressed: (){
-    //         layoutController.initializeDriveApi;
-    //       }
-    //
-    //     ),
-    //   );
-    // } else
-    //   if (layoutController.videoFiles.isEmpty) {
-    //   return Center(
-    //     child: ElevatedButton(
-    //       child: const Text('List Files'),
-    //       onPressed: layoutController.listFiles,
-    //     ),
-    //   );
-    // } else {
       return Obx(() =>
           ListView.builder(
             itemCount: layoutController.videoFiles.length,
@@ -88,42 +71,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
               );
             },
           )
-        // ListView.builder(
-        // itemCount: layoutController.videoFiles.length,
-        // itemBuilder: (context, index) {
-        //   final file = layoutController.videoFiles[index];
-        //   return ListTile(
-        //     leading: Icon(Icons.ac_unit),
-        //     title: Text(file.name ?? 'Untitled'),
-        //     subtitle: Text(file.id ?? ''),
-        //     onTap: (){
-        //       playVideo(file.webViewLink ?? '');
-        //     },
-        //   );
-        // },
-        // )
       );
-
-    // }
-  }
-
-  Future<void> playVideo(String videoUrl) async {
-    final videoPlayerController = VideoPlayerController.network(videoUrl);
-    videoPlayerController.initialize().then((_) {
-      videoPlayerController.play();
-    });
-
-    // chewieController = ChewieController(
-    //   videoPlayerController: _videoPlayerController!,
-    //   autoPlay: true,
-    //   looping: false,
-    //   allowFullScreen: true,
-    //   materialProgressColors: ChewieProgressColors(
-    //       backgroundColor: Colors.black,
-    //       playedColor: Colors.green.shade300),
-    //   allowPlaybackSpeedChanging: true,
-    //   showControls: true,
-    //   showOptions: false,
-    // );
   }
 }

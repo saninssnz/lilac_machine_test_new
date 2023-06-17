@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
@@ -25,7 +26,6 @@ class GetController extends GetxController {
     drive.DriveApi.driveFileScope,
     drive.DriveApi.driveMetadataReadonlyScope,
   ]);
-  // RxList<String> mp4FileNames = <String>[].obs;
   drive.DriveApi? driveApi;
   final GlobalKey<ScaffoldState> key = GlobalKey();
   String API_KEY = 'AIzaSyAv3LCC4LjPaz3Q2_53C-8lW6qfj_E-UlE';
@@ -36,6 +36,12 @@ class GetController extends GetxController {
   RxList<File> mp4Files = <File>[].obs;
   final Rx<File?> selectedVideo = Rx<File?>(null);
   final controllerRef = Rx<InAppWebViewController?>(null);
+  VideoPlayerController? videoPlayerController;
+  late VideoPlayerController fileVideoController;
+  late Future<void> initializeVideoPlayerFuture;
+  late VideoPlayerController? videoListPlayerController;
+  late ChewieController? chewieController;
+  bool isDataLoading = false;
 
 
 
@@ -44,25 +50,11 @@ class GetController extends GetxController {
     this.update();
   }
 
-  // Future<void> fetchMp4Files() async {
-  //   String downloadFolderPath = '/storage/emulated/0/Download';
-  //   Directory directory = Directory(downloadFolderPath);
-  //   List<FileSystemEntity> files = directory.listSync(recursive: true);
-  //
-  //   if (await directory.exists()) {
-  //     final files = await directory
-  //         .list(recursive: false)
-  //         .where((entity) => entity is File && entity.path.endsWith('.mp4'))
-  //         .map((entity) => File(entity.path))
-  //         .toList();
-  //     mp4Files.assignAll(files);
-  //     update();
-  //   }
-  // }
-
   void selectVideo(File file) {
     selectedVideo.value = file;
   }
+
+
   Future<void> fetchMp4Files() async {
     String downloadFolderPath = '/storage/emulated/0/Download';
     Directory directory = Directory(downloadFolderPath);
@@ -80,36 +72,6 @@ class GetController extends GetxController {
     update();
   }
 
-  // Future<void> initializeDriveApi() async {
-  //   final client = await _googleSignIn.signInSilently();
-  //   if (client == null) {
-  //     await _googleSignIn.signIn();
-  //   }
-  //   final currentUser = _googleSignIn.currentUser;
-  //   if (currentUser != null) {
-  //     final authHeaders = await currentUser.authHeaders;
-  //     final authenticatedClient = http.Client();
-  //     final url = Uri.parse('https://www.googleapis.com/drive/v3/files?key=' + API_KEY);
-  //     final request = http.Request('GET', url);
-  //     request.headers['Authorization'] = authHeaders['Authorization']!;
-  //     request.headers['X-Goog-Api-Key'] = API_KEY;
-  //     final streamedResponse = await authenticatedClient.send(request);
-  //     final response = await http.Response.fromStream(streamedResponse);
-  //     if (response.statusCode == 200) {
-  //       driveApi = drive.DriveApi(authenticatedClient);
-  //     } else {
-  //       print('Failed to authenticate: ${response.statusCode}');
-  //     }
-  //   }
-  // }
-
-  //
-  // Future<void> downloadFile(String webContentLink, String savePath) async {
-  //   final response = await http.get(Uri.parse(webContentLink));
-  //   final file = File(savePath);
-  //   await file.writeAsBytes(response.bodyBytes);
-  //   print('File downloaded successfully!');
-  // }
 
   Future downloadFiles(String url, name){
     return FileDownloader.downloadFile(
@@ -118,13 +80,10 @@ class GetController extends GetxController {
           onProgress: (String? fileName, double progress) {
             _progress = progress;
             showProgressBarNotification(progress);
-            print('FILE fileName HAS PROGRESS $progress');
           },
           onDownloadCompleted: (String path) {
-            print('FILE DOWNLOADED TO PATH: $path');
           },
           onDownloadError: (String error) {
-            print('DOWNLOAD ERROR: $error');
           });
   }
 
@@ -150,7 +109,6 @@ class GetController extends GetxController {
     }
     final currentUser = _googleSignIn.currentUser;
     if (currentUser != null) {
-      print(currentUser);
       final authHeaders = await currentUser.authHeaders;
       final authenticatedClient = _AuthClient(authHeaders['Authorization']!);
       authenticatedClient.headers['X-Goog-Api-Key'] = API_KEY;
@@ -165,15 +123,6 @@ class GetController extends GetxController {
           final webContentLink = file.webContentLink;
           final webViewLink = file.webViewLink;
           final extension = file.fileExtension;
-
-          // Do something with the retrieved file metadata
-          print('Kind: $kind');
-          print('Name: $name');
-          print('ID: $id');
-          print('Web Content Link: $webContentLink');
-          print('Web View Link: $webViewLink');
-          print('Extension: $extension');
-          print('---------------------');
         }
       }
       videoFiles.value = fileList?.files??[];
@@ -181,73 +130,6 @@ class GetController extends GetxController {
     }
     update();
   }
-
-  // Future<void> updateWebContentLink(String fileId, String webContentLink) async {
-  //   final authHeaders = await _googleSignIn.currentUser?.authHeaders;
-  //   final authenticatedClient = _AuthClient(authHeaders!['Authorization']!);
-  //   final driveApi = drive.DriveApi(authenticatedClient);
-  //   final file = drive.File();
-  //   file.webContentLink = webContentLink;
-  //
-  //   try {
-  //     await driveApi.files.update(file, fileId);
-  //     print('Web content link updated successfully.');
-  //   } catch (e) {
-  //     print('Failed to update web content link: $e');
-  //   }
-  // }
-
-
-  // Future<void> listFiles() async {
-  //   try {
-  //     final response = await driveApi?.files.list();
-  //       videoFiles = response!.files!;
-  //   } catch (error) {
-  //     print('Error listing files: $error');
-  //   }
-  //   update();
-  // }
-
-  Future<void> signOut() async {
-    await _googleSignIn.signOut();
-    driveApi = null;
-    videoFiles.clear();
-  }
-
-
-  // Future<void> retrieveVideoFiles() async {
-  //   try {
-  //     final authClient = await authenticate();
-  //     final files = await getVideoFiles(authClient);
-  //     videoFiles = files;
-  //   } catch (e) {
-  //     print('Error retrieving video files: $e');
-  //   }
-  // }
-
-
-  // Future<auth.AuthClient> authenticate() async {
-  //   const scopes = [drive.DriveApi.driveReadonlyScope];
-  //   final clientId = auth.ClientId(
-  //       '202959916943-f3n8pfu791qr69u214e4vmglharaqtob.apps.googleusercontent.com',
-  //       'AIzaSyA-Od9lolWcOAytLFXm3ztNUitG9gL3roU');
-  //   final credential = await clientViaUserConsent(
-  //     clientId,
-  //     scopes,
-  //         (url) {
-  //       launch(url);
-  //       // Open the authorization URL in a webview or browser
-  //     },
-  //   );
-  //   return credential;
-  // }
-
-  // Future<List<drive.File>> getVideoFiles(auth.AuthClient client) async {
-  //   final driveApi = drive.DriveApi(client);
-  //   final fileList = await driveApi.files.list(q: "mimeType='video/*'");
-  //   return fileList.files ?? [];
-  // }
-
 }
 
 class _AuthClient extends http.BaseClient {

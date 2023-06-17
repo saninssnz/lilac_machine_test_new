@@ -27,9 +27,3 @@ InputDecoration buildInputDecoration({String? hintText, Widget? suffixIcon,Strin
         color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w500),
   );
 }
-
-List<String> videosList = [
-  "https://drive.google.com/file/d/13HzPDMq6aTK2o2rK6jNBIdJFTxBhViNj/view?usp=drive_link",
-  "https://drive.google.com/file/d/1J-jzixZa8vMvXxZWMBoL8dzlKTmfNMTO/view?usp=drive_link",
-  "https://drive.google.com/file/d/1A0xr7FVG05h8LeeAEnA0RzWQOy8n-R0g/view?usp=drive_link"
-];
