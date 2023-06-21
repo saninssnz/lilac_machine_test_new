@@ -39,22 +39,22 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             Container(
-                height: MediaQuery.of(context).size.height / 2.5,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(100),
-                    bottomLeft: Radius.circular(100),
-                  ),
+              height: MediaQuery.of(context).size.height / 2.5,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(100),
+                  bottomLeft: Radius.circular(100),
                 ),
-            child: Center(
-              child: Text("Login",style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 40
+              ),
+              child: Center(
+                child: Text("Login",style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 40
+                ),),
               ),),
-            ),),
             SizedBox(height: 50,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -107,11 +107,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       if(docs.length>0){
                         userModel = UserModel.fromSnapshot(docs[0]);
                         DataRepo.userCollection.where('mobile', isEqualTo: mobileController.text).
-                      get().then((value) async {
+                        get().then((value) async {
                           docs = value.docs;
                           if (docs.length > 0) {
 
-                           layoutController.getUserDetails(UserModel.fromSnapshot(docs[0]));
+                            layoutController.getUserDetails(UserModel.fromSnapshot(docs[0]));
                           }
                         });
                         isLoading=false;
@@ -141,9 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: Container(
                   decoration: new BoxDecoration(
-                      borderRadius:
-                      BorderRadius.circular(20),
-                     color: primaryColor,
+                    borderRadius:
+                    BorderRadius.circular(20),
+                    color: primaryColor,
                   ),
                   height: 50,
                   width: MediaQuery
@@ -173,14 +173,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: 2.0),
                     child: Text("Don't have an account?",
-                      style: TextStyle(
-                        color: Colors.black
-                      )
+                        style: TextStyle(
+                            color: Colors.black
+                        )
                     ),
                   ),
                   InkWell(
                     onTap: () {
-                     Get.to(()=>RegisterScreen());
+                      Get.to(()=>RegisterScreen());
                     },
                     child: Text("Sign up",
                         style: TextStyle(
@@ -207,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
     auth.verifyPhoneNumber(
         phoneNumber: mobileController.text,
         verificationCompleted: (PhoneAuthCredential credential)async{
-           await auth.signInWithCredential(credential).then((value){
+          await auth.signInWithCredential(credential).then((value){
             print("logged in successfully");
           });
         },
@@ -220,19 +220,19 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() {});
         },
         codeAutoRetrievalTimeout:(String? verificationId){});
-}
+  }
 
 
-void verifyCode() async{
+  void verifyCode() async{
     PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationIdReceived,
         smsCode: enteredPin);
 
     await  auth.signInWithCredential(credential).then((value){
       print("logged in successfully");
 
-      Get.to(()=>VideoListScreen());
+      Get.to(()=>HomeScreen());
     });
-}
+  }
 
 
   Widget _textFieldOTP({bool? first, last}) {
